@@ -1,7 +1,7 @@
 #!/bin/sh
-set -e
-
-APP_NAME=$(grep APP_NAME .env | cut -d '=' -f2)
+if [ -f .env ]; then
+  export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
+fi
 
 echo "Deploying $APP_NAME"
 
