@@ -14,9 +14,9 @@ services:
             - ./:/var/www/html
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.nextcloud-sec.entrypoints=websecure"
-            - "traefik.http.routers.nextcloud-sec.rule=Host(`platby.thevelda.eu`)"
-            - "traefik.http.routers.nextcloud-sec.tls.certresolver=lets-encrypt"
+            - "traefik.http.routers.platby-sec.entrypoints=websecure"
+            - "traefik.http.routers.platby-sec.rule=Host(`platby.thevelda.eu`)"
+            - "traefik.http.routers.platby-sec.tls.certresolver=lets-encrypt"
 
 networks:
     default:
