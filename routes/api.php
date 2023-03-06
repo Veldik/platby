@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PayerController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PayerController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\StatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -18,6 +19,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
     Route::get('user', [UserController::class, 'index']);
+    Route::get('stats', [StatsController::class, 'index']);
     Route::apiResource('payers', PayerController::class);
     Route::apiResource('payments', PaymentController::class);
 });
