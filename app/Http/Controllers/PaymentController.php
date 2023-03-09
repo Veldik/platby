@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PaymentResource;
 use App\Mail\PaymentRecordEmail;
+use App\Mail\PaymentStornoEmail;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
@@ -73,6 +74,21 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
+        $payment->paymentRecords()->get()->each(function ($record) {
+            $paymentRecord = [
+                'id' => $record->id,
+                'title' => $record->payment['title'],
+                'description' => $record->payment['description'] ?? null,
+                'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
+                'email' => $record->payer->email,
+                'amount' => $record->amount,
+                'account_number' => config('fio.account_number'),
+                'variable_symbol' => $record->id,
+            ];
+
+            Mail::to($paymentRecord['email'])->send(new PaymentStornoEmail($paymentRecord));
+        });
+
         $payment->delete();
 
         return response()->json(['status' => 'ok']);

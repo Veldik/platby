@@ -57,7 +57,7 @@ class CheckBankPayments extends Command
                 $paymentRecord = [
                     'id' => $dbPaymentRecord->id,
                     'title' => $dbPaymentRecord->payment['title'],
-                    'description' => $dbPaymentRecord['description'] ?? null,
+                    'description' => $dbPaymentRecord->payment['description'] ?? null,
                     'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
                     'email' => $dbPaymentRecord->payer->email,
                     'amount' => $dbPaymentRecord->amount,
@@ -73,7 +73,7 @@ class CheckBankPayments extends Command
                 $paymentRecord = [
                     'id' => $dbPaymentRecord->id,
                     'title' => $dbPaymentRecord->payment['title'],
-                    'description' => $dbPaymentRecord['description'] ?? null,
+                    'description' => $dbPaymentRecord->payment['description'] ?? null,
                     'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
                     'email' => $dbPaymentRecord->payer->email,
                     'amount' => $dbPaymentRecord->amount,

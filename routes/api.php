@@ -17,6 +17,10 @@ Route::post('/login', [AuthController::class, 'login']);
 //
 //});
 
+Route::get('/',  function () {
+    return response()->json(['name' => config('app.name')]);
+});
+
 Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
     Route::get('user', [UserController::class, 'index']);
     Route::get('stats', [StatsController::class, 'index']);
