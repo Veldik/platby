@@ -5,6 +5,7 @@ use App\Http\Controllers\PayerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\PaymentRecordController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,4 +27,8 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
     Route::get('stats', [StatsController::class, 'index']);
     Route::apiResource('payers', PayerController::class);
     Route::apiResource('payments', PaymentController::class);
+    Route::prefix('payment-record/{paymentRecord}')->group(function () {
+        Route::post('pay', [PaymentRecordController::class, 'pay']);
+        Route::post('resend', [PaymentRecordController::class, 'resend']);
+    });
 });
