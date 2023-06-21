@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('telescope:prune --hours=48')->daily();
         $schedule->command('bank:check')->everyMinute();
+        $schedule->command('mail:late-payment-announce')->weekly()->mondays()->at('9:15');
     }
 
     /**
