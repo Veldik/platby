@@ -20,6 +20,7 @@ class PaymentRecordResource extends JsonResource
             'payer' => PayerResource::make($this->whenLoaded('payer')),
             'payment' => PaymentResource::make($this->whenLoaded('payment')),
             'paid_at' => $this->paid_at,
+            'qr_code' => $this->getQRCode(),
         ];
     }
 }

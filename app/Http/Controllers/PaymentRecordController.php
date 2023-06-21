@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PaymentRecordResource;
 use App\Http\Resources\PaymentResource;
 use App\Mail\PaidSuccessfullyEmail;
 use App\Mail\PaymentRecordEmail;
@@ -15,6 +16,13 @@ use Defr\QRPlatba\QRPlatba;
 
 class PaymentRecordController extends Controller
 {
+
+    public function show(PaymentRecord $paymentRecord)
+    {
+        $record = PaymentRecord::with('payment', 'payer')->where('id', $paymentRecord->id)->first();
+
+        return PaymentRecordResource::make($record);
+    }
 
     public function pay(PaymentRecord $paymentRecord)
     {

@@ -28,6 +28,7 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
     Route::apiResource('payers', PayerController::class);
     Route::apiResource('payments', PaymentController::class);
     Route::prefix('payment-record/{paymentRecord}')->group(function () {
+        Route::get('/', [PaymentRecordController::class, 'show']);
         Route::post('pay', [PaymentRecordController::class, 'pay']);
         Route::post('resend', [PaymentRecordController::class, 'resend']);
     });
