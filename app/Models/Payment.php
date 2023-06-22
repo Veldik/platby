@@ -18,6 +18,10 @@ class Payment extends Model
     {
         parent::boot();
 
+        static::addGlobalScope('order', function ($query) {
+            $query->orderBy('created_at', 'desc');
+        });
+
         static::deleting(function ($payment) {
             $payment->paymentRecords()->delete();
         });
