@@ -17,6 +17,11 @@ services:
             - "traefik.http.routers.platby-sec.entrypoints=websecure"
             - "traefik.http.routers.platby-sec.rule=Host(`api.platby.thevelda.eu`)"
             - "traefik.http.routers.platby-sec.tls.certresolver=lets-encrypt"
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 256M
 
 networks:
     default:
