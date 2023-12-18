@@ -33,7 +33,7 @@ class PaymentLateEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address('platby@thevelda.eu', 'Veldovy platby'),
+            from: new Address(config('mail.from.address'), config('mail.from.name')),
             subject: 'Oznámení o nezaplacených platbách!',
         );
     }
