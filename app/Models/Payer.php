@@ -28,4 +28,9 @@ class Payer extends Model
     {
         return $this->hasMany(PaymentRecord::class);
     }
+
+    public function credits()
+    {
+        return $this->hasMany(Credit::class);
+    }
 }

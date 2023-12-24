@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\CreditAcceptedEmail;
 use App\Mail\PaidSuccessfullyEmail;
 use App\Mail\AdminPaidWrongEmail;
 use App\Mail\PaidWrongEmail;
+use App\Models\Credit;
+use App\Models\Payer;
 use App\Models\PaymentRecord;
 use Carbon\Carbon;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use h4kuna\Fio;
 use Illuminate\Support\Facades\Mail;
@@ -35,7 +37,8 @@ class CheckBankPayments extends Command
      */
     public function handle()
     {
-        $account = [ "fioAccount" => [
+        echo "Kontrola nových plateb z banky.\n";
+        $account = ["fioAccount" => [
             "account" => config('fio.account_number'),
             "token" => config('fio.token'),
         ]];
@@ -47,46 +50,75 @@ class CheckBankPayments extends Command
         $list = $fioRead->lastDownload();
 
         foreach ($list as $transaction) {
-            $record = PaymentRecord::where([['id', $transaction->variableSymbol], ['paid_at', null], ['amount', $transaction->amount]])->update(['paid_at' => Carbon::now()]);
-            $wrongRecord = PaymentRecord::where([['id', $transaction->variableSymbol], ['paid_at', null]])->first();
-
-            if ($record) {
-
-                $dbPaymentRecord = PaymentRecord::where('id', $transaction->variableSymbol)->first();
-
-                $paymentRecord = [
-                    'id' => $dbPaymentRecord->id,
-                    'title' => $dbPaymentRecord->payment['title'],
-                    'description' => $dbPaymentRecord->payment['description'] ?? null,
-                    'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
-                    'email' => $dbPaymentRecord->payer->email,
-                    'amount' => $dbPaymentRecord->amount,
-                    'account_number' => config('fio.account_number'),
-                    'variable_symbol' => $dbPaymentRecord->id,
-                ];
-
-                Mail::to($paymentRecord['email'])->send(new PaidSuccessfullyEmail($paymentRecord));
-                $this->info('Platba ' . $dbPaymentRecord->id . ' s částkou ' . $paymentRecord['amount'] . 'CZK byla úspěšně zpracována.');
-            } else if ($wrongRecord) {
-                $dbPaymentRecord = $wrongRecord;
-
-                $paymentRecord = [
-                    'id' => $dbPaymentRecord->id,
-                    'title' => $dbPaymentRecord->payment['title'],
-                    'description' => $dbPaymentRecord->payment['description'] ?? null,
-                    'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
-                    'email' => $dbPaymentRecord->payer->email,
-                    'amount' => $dbPaymentRecord->amount,
-                    'realamount' => $transaction->amount,
-                    'account_number' => config('fio.account_number'),
-                    'variable_symbol' => $dbPaymentRecord->id,
-                ];
-
-                $this->error('Platba ' . $transaction->variableSymbol . ' byla nalezena, ale nemohla být zpracována, protože částka nesouhlasí. Na účet přišla částka ' . $transaction->amount . 'CZK, ale platba byla očekávána v hodnotě ' . $wrongRecord->amount . 'CZK.');
-                Mail::to(config('mail.from.address'))->send(new AdminPaidWrongEmail($paymentRecord));
-                Mail::to($paymentRecord['email'])->send(new PaidWrongEmail($paymentRecord));
+            if ($transaction->variableSymbol == null || $transaction->amount < 0) {
+                continue;
+            }
 
 
+            // Check if transaction must be processed as credit
+            if ($transaction->specificSymbol == "2") {
+                $payer = Payer::where('id', $transaction->variableSymbol)->first();
+
+                if ($payer) {
+                    Credit::create([
+                        'payer_id' => $payer->id,
+                        'amount' => $transaction->amount,
+                        'description' => "deposit from bank account " . $transaction->toAccount . "/" . $transaction->bankCode,
+                    ]);
+
+                    $data = [
+                        'amount' => $transaction->amount,
+                        'payer' => [
+                            'name' => $payer->firstName . ' ' . $payer->lastName,
+                            'email' => $payer->email,
+                            'credit' => $payer->credits->sum('amount'),
+                        ]
+                    ];
+
+                    Mail::to($payer->email)->send(new CreditAcceptedEmail($data));
+                } else {
+                    $this->error('Při zpracování kreditu došlo k chybě. Příjemce s variabilním symbolem ' . $transaction->variableSymbol . ' nebyl nalezen.');
+                }
+            } else {
+                $record = PaymentRecord::where([['id', $transaction->variableSymbol], ['paid_at', null], ['amount', $transaction->amount]])->update(['paid_at' => Carbon::now()]);
+                $wrongRecord = PaymentRecord::where([['id', $transaction->variableSymbol], ['paid_at', null]])->first();
+
+                if ($record) {
+
+                    $dbPaymentRecord = PaymentRecord::where('id', $transaction->variableSymbol)->first();
+
+                    $paymentRecord = [
+                        'id' => $dbPaymentRecord->id,
+                        'title' => $dbPaymentRecord->payment['title'],
+                        'description' => $dbPaymentRecord->payment['description'] ?? null,
+                        'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
+                        'email' => $dbPaymentRecord->payer->email,
+                        'amount' => $dbPaymentRecord->amount,
+                        'account_number' => config('fio.account_number'),
+                        'variable_symbol' => $dbPaymentRecord->id,
+                    ];
+
+                    Mail::to($paymentRecord['email'])->send(new PaidSuccessfullyEmail($paymentRecord));
+                    $this->info('Platba ' . $dbPaymentRecord->id . ' s částkou ' . $paymentRecord['amount'] . 'CZK byla úspěšně zpracována.');
+                } else if ($wrongRecord) {
+                    $dbPaymentRecord = $wrongRecord;
+
+                    $paymentRecord = [
+                        'id' => $dbPaymentRecord->id,
+                        'title' => $dbPaymentRecord->payment['title'],
+                        'description' => $dbPaymentRecord->payment['description'] ?? null,
+                        'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
+                        'email' => $dbPaymentRecord->payer->email,
+                        'amount' => $dbPaymentRecord->amount,
+                        'realamount' => $transaction->amount,
+                        'account_number' => config('fio.account_number'),
+                        'variable_symbol' => $dbPaymentRecord->id,
+                    ];
+
+                    $this->error('Platba ' . $transaction->variableSymbol . ' byla nalezena, ale nemohla být zpracována, protože částka nesouhlasí. Na účet přišla částka ' . $transaction->amount . 'CZK, ale platba byla očekávána v hodnotě ' . $wrongRecord->amount . 'CZK.');
+                    Mail::to(config('mail.from.address'))->send(new AdminPaidWrongEmail($paymentRecord));
+                    Mail::to($paymentRecord['email'])->send(new PaidWrongEmail($paymentRecord));
+                }
             }
         }
 

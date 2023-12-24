@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PaymentResource;
+use App\Mail\PaidCreditEmail;
 use App\Mail\PaymentRecordEmail;
 use App\Mail\PaymentStornoEmail;
+use App\Models\Payer;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\PaymentRecord;
@@ -33,33 +35,62 @@ class PaymentController extends Controller
         ]);
 
         foreach ($validated['payers'] as $payer) {
-            $record = PaymentRecord::create([
-                'payer_id' => $payer['id'],
-                'payment_id' => $payment->id,
-                'amount' => $payer['amount']
-            ]);
+            $dbPayer = Payer::where('id', $payer['id'])->first();
 
-            $paymentRecord = [
-                'id' => $record->id,
-                'title' => $validated['title'],
-                'description' => $validated['description'] ?? null,
-                'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
-                'email' => $record->payer->email,
-                'amount' => $record->amount,
-                'account_number' => config('fio.account_number'),
-                'variable_symbol' => $record->id,
-            ];
+            if ($dbPayer->credits->sum('amount') >= $payer['amount']) {
+                $dbPayer->credits()->create([
+                    'amount' => -$payer['amount'],
+                    'description' => 'withdraw by payment ' . $validated['title'] . ' #' . $payment->id,
+                ]);
 
-            $qrPlatba = new QRPlatba();
-            $qrPlatba->setAccount($paymentRecord['account_number'])
-                ->setVariableSymbol($paymentRecord['variable_symbol'])
-                ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
-                ->setAmount($paymentRecord['amount'])
-                ->setCurrency('CZK')
-                ->setDueDate(new \DateTime());
+                $data = [
+                    'title' => $validated['title'],
+                    'credit' => $payer['amount'],
+                    'payer' => [
+                        'name' => $dbPayer->firstName . ' ' . $dbPayer->lastName,
+                        'email' => $dbPayer->email,
+                        'credit' => $dbPayer->credits->sum('amount')-$payer['amount'],
+                    ]
+                ];
 
-            $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
-            Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
+                PaymentRecord::create([
+                    'payer_id' => $payer['id'],
+                    'payment_id' => $payment->id,
+                    'amount' => $payer['amount'],
+                    'paid_at' => now(),
+                ]);
+
+                Mail::to($dbPayer->email)->send(new PaidCreditEmail($data));
+            } else {
+                $record = PaymentRecord::create([
+                    'payer_id' => $payer['id'],
+                    'payment_id' => $payment->id,
+                    'amount' => $payer['amount']
+                ]);
+
+                $paymentRecord = [
+                    'id' => $record->id,
+                    'title' => $validated['title'],
+                    'description' => $validated['description'] ?? null,
+                    'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
+                    'email' => $record->payer->email,
+                    'amount' => $record->amount,
+                    'account_number' => config('fio.account_number'),
+                    'variable_symbol' => $record->id,
+                ];
+
+                $qrPlatba = new QRPlatba();
+                $qrPlatba->setAccount($paymentRecord['account_number'])
+                    ->setVariableSymbol($paymentRecord['variable_symbol'])
+                    ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
+                    ->setAmount($paymentRecord['amount'])
+                    ->setCurrency('CZK')
+                    ->setDueDate(new \DateTime());
+
+                $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
+
+                Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
+            }
         }
 
         return response()->json(['status' => 'ok']);
@@ -68,7 +99,7 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Payment  $payment
+     * @param \App\Models\Payment $payment
      * @return \Illuminate\Http\Response
      */
     public function destroy(Payment $payment)

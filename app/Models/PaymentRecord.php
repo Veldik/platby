@@ -12,6 +12,7 @@ class PaymentRecord extends Model
         'payer_id',
         'payment_id',
         'amount',
+        'paid_at',
     ];
 
     use HasFactory;
