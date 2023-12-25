@@ -21,7 +21,7 @@ class CheckBankPayments extends Command
      *
      * @var string
      */
-    protected $signature = 'bank:check';
+    protected $signature = 'check:bank-payments';
 
     /**
      * The console command description.

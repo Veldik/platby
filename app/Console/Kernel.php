@@ -11,6 +11,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\CheckBankPayments::class,
         Commands\UserRegister::class,
+        Commands\CheckPeriodPaymentsCommand::class,
     ];
 
     /**
@@ -22,7 +23,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('telescope:prune --hours=48')->daily();
-        $schedule->command('bank:check')->everyMinute();
+        $schedule->command('check:bank-payments')->everyMinute();
+        $schedule->command('check:period-payments')->everyMinute();
         $schedule->command('mail:late-payment-announce')->weekly()->mondays()->at('9:15');
     }
 
