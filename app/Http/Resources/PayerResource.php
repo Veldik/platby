@@ -19,7 +19,6 @@ class PayerResource extends JsonResource
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
-            'paymentsRecords' => PaymentRecordResource::collection($this->whenLoaded('paymentRecords')),
             'status' => $this->whenLoaded('paymentRecords', function () {
                 return [
                     'paid' => [

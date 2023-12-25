@@ -12,17 +12,22 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Models\PaymentRecord;
 use Illuminate\Support\Facades\Mail;
 use Defr\QRPlatba\QRPlatba;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        return PaymentResource::collection(Payment::with('paymentRecords', 'paymentRecords.payer')->get());
+        $payments = QueryBuilder::for(Payment::class)
+            ->with('paymentRecords', 'paymentRecords.payer') // todo: remove and make it into a separate endpoint
+            ->paginate(10);
+
+        return PaymentResource::collection($payments);
     }
 
     public function store(StorePaymentRequest $request)

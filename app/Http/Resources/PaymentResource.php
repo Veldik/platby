@@ -18,7 +18,7 @@ class PaymentResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'paymentRecords' => PaymentRecordResource::collection($this->whenloaded('paymentRecords')),
+            'paymentRecords' => PaymentRecordResource::collection($this->whenloaded('paymentRecords')), // todo: remove and make it into a separate endpoint
             'status' => $this->whenLoaded('paymentRecords', function () {
                 return [
                     'paid' => [
