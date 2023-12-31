@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Credit;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PayerResource extends JsonResource
@@ -16,6 +17,7 @@ class PayerResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'fullName' => $this->fullName(),
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
@@ -34,6 +36,9 @@ class PayerResource extends JsonResource
                         'records' => $this->paymentRecords->count(),
                     ],
                 ];
+            }),
+            'creditSum' => $this->whenLoaded('credits', function () {
+                return $this->creditSum();
             }),
         ];
     }

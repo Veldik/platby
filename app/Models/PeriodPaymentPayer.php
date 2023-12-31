@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PeriodPaymentPayers extends Model
+class PeriodPaymentPayer extends Model
 {
     protected $fillable = [
         'payer_id',

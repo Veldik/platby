@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Credit extends Model
@@ -11,6 +12,8 @@ class Credit extends Model
         'amount',
         'description',
     ];
+
+    use HasFactory;
 
     public function payer()
     {

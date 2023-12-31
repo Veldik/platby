@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayerRequest;
 use App\Http\Requests\UpdatePayerRequest;
 use App\Http\Resources\PayerResource;
@@ -16,7 +17,7 @@ class PayerController extends Controller
      */
     public function index()
     {
-        return PayerResource::collection(Payer::with('paymentRecords', 'paymentRecords.payment')->get());
+        return PayerResource::collection(Payer::with('paymentRecords', 'paymentRecords.payment', 'credits')->get());
     }
 
     /**
@@ -42,7 +43,7 @@ class PayerController extends Controller
      */
     public function show(Payer $payer)
     {
-        return PayerResource::make($payer);
+        return PayerResource::make($payer->load('paymentRecords', 'paymentRecords.payment', 'credits'));
     }
 
     /**

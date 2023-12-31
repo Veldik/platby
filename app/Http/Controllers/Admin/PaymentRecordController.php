@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentRecordResource;
-use App\Http\Resources\PaymentResource;
 use App\Mail\PaidSuccessfullyEmail;
 use App\Mail\PaymentRecordEmail;
-use App\Mail\PaymentStornoEmail;
-use App\Models\Payment;
-use App\Http\Requests\StorePaymentRequest;
 use App\Models\PaymentRecord;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
 use Defr\QRPlatba\QRPlatba;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentRecordController extends Controller
 {
@@ -82,5 +79,14 @@ class PaymentRecordController extends Controller
         $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
         Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
         return response()->json(['status' => 'ok']);
+    }
+
+    public function qrCode(PaymentRecord $paymentRecord)
+    {
+        if ($paymentRecord->paid_at) {
+            return response()->json(['status' => 'error', 'message' => 'Platební záznam je již zaplacen.'], 400);
+        }
+
+        return response()->json(['data' => $paymentRecord->getQRCode()]);
     }
 }

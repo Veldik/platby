@@ -41,4 +41,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isPayer()
+    {
+        return $this->payer()->exists();
+    }
+
+
+    public function payer()
+    {
+        return $this->hasOne(Payer::class, 'email', 'email') ?? null;
+    }
 }

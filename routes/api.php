@@ -1,35 +1,60 @@
 <?php
 
+use App\Http\Controllers\Admin\PayerController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PaymentRecordController;
+use App\Http\Controllers\Admin\PeriodPaymentController;
+use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PayerController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\StatsController;
-use App\Http\Controllers\PaymentRecordController;
+use App\Http\Controllers\UserPayerController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-// TODO: Vyřešit práva
-//Route::post('/register', [AuthController::class, 'register']);
+// todo: fix forgot password and reset password
+//Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+//Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//
-//});
-
-Route::get('/',  function () {
+Route::get('/', function () {
     return response()->json(['name' => config('app.name')]);
 });
 
 Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
     Route::get('user', [UserController::class, 'index']);
-    Route::get('stats', [StatsController::class, 'index']);
-    Route::apiResource('payers', PayerController::class);
-    Route::apiResource('payments', PaymentController::class);
-    Route::prefix('payment-record/{paymentRecord}')->group(function () {
-        Route::get('/', [PaymentRecordController::class, 'show']);
-        Route::post('pay', [PaymentRecordController::class, 'pay']);
-        Route::post('resend', [PaymentRecordController::class, 'resend']);
+
+    // User (payer) routes
+    Route::group(['prefix' => 'payer', 'middleware' => 'is_payer'], function () {
+        Route::get('/', [UserPayerController::class, 'show']);
+        Route::get('add-credits', [UserPayerController::class, 'addCredits']);
+        Route::get('payments', [UserPayerController::class, 'payments']);
+        Route::get('credits', [UserPayerController::class, 'credits']);
+        Route::prefix('payment-record/{paymentRecord}')->group(function () {
+            Route::get('qrcode', [UserPayerController::class, 'qrCode']);
+        });
+    });
+
+    // Admin routes
+    Route::group(['prefix' => 'admin', 'middleware' => 'is_admin'], function () {
+        Route::get('stats', [StatsController::class, 'index']);
+        Route::apiResource('payers', PayerController::class);
+        Route::apiResource('payments', PaymentController::class);
+        Route::prefix('payment-record/{paymentRecord}')->group(function () {
+            Route::get('/', [PaymentRecordController::class, 'show']);
+            Route::get('qrcode', [PaymentRecordController::class, 'qrCode']);
+            Route::post('pay', [PaymentRecordController::class, 'pay']);
+            Route::post('resend', [PaymentRecordController::class, 'resend']);
+        });
+
+
+        Route::apiResource('period-payments', PeriodPaymentController::class);
+
+        Route::prefix('period-payment/{periodPayment}')->group(function () {
+            Route::post('add-payer', [PeriodPaymentController::class, 'addPayer']);
+        });
+
+        Route::prefix('period-payment-payer/{periodPaymentPayer}')->group(function () {
+            Route::delete('/', [PeriodPaymentController::class, 'destroy']);
+        });
     });
 });

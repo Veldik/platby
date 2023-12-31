@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Utils\ReplacementUtil;
+use Cron\CronExpression;
 use Illuminate\Database\Eloquent\Model;
 
 class PeriodPayment extends Model
@@ -13,6 +15,19 @@ class PeriodPayment extends Model
         'last_run',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('order', function ($query) {
+            $query->orderBy('created_at', 'desc');
+        });
+
+        static::deleting(function ($periodPayment) {
+            $periodPayment->periodPayers()->delete();
+        });
+    }
+
     protected $casts = [
         'last_run' => 'timestamp',
     ];
@@ -20,5 +35,19 @@ class PeriodPayment extends Model
     public function periodPayers()
     {
         return $this->hasMany(PeriodPaymentPayers::class);
+    }
+
+    public function nextRun()
+    {
+        $cron = CronExpression::factory($this->cron_expression);
+        return $cron->getNextRunDate()->getTimestamp();
+    }
+
+    public function displayTitle() {
+        return ReplacementUtil::replace($this->title);
+    }
+
+    public function displayDescription() {
+        return ReplacementUtil::replace($this->description);
     }
 }

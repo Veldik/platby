@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PaymentRecordResource extends JsonResource
+class CreditResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,9 @@ class PaymentRecordResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'payer' => $this->whenLoaded('payer', PayerResource::make($this->payer)),
             'amount' => $this->amount,
-            'payer' => PayerResource::make($this->whenLoaded('payer')),
-            'payment' => PaymentResource::make($this->whenLoaded('payment')),
-            'paidAt' => $this->paid_at,
+            'description' => $this->description,
             'createdAt' => $this->created_at,
         ];
     }

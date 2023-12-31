@@ -16,7 +16,7 @@
                     <b>Číslo účtu:</b> {{ $payment["account_number"] }}<br>
                     <b>Variabilní symbol:</b> {{ $payment['variable_symbol'] }}<br>
                     <b>Částka:</b> {{ str_replace(".", ",", $payment['amount']) }} CZK<br>
-                    <img alt="logo" height="auto"
+                    <img alt="qrcode" height="auto"
                          src="{{ $message->embed($payment['qr_code']) }}"
                          width="300" height="300" alt="QR Platba"/>
 

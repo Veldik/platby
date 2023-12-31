@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Models\Credit;
 use App\Models\Payer;
 use App\Models\Payment;
 use App\Models\PaymentRecord;
@@ -30,7 +32,23 @@ class StatsController extends Controller
                 'amount' => PaymentRecord::sum('amount'),
                 'records' => PaymentRecord::count(),
             ],
-            'users' => User::count(),
+            'credits' => [
+                'amount' => [
+                    'total' => Credit::sum('amount'),
+                    'deposit' => Credit::where('amount', '>', 0)->sum('amount'),
+                    'withdraw' => Credit::where('amount', '<', 0)->sum('amount'),
+                ],
+                'records' => [
+                    'total' => Credit::count(),
+                    'deposit' => Credit::where('amount', '>', 0)->count(),
+                    'withdraw' => Credit::where('amount', '<', 0)->count(),
+                ]
+            ],
+            'users' => [
+                'total' => User::count(),
+                'admins' => User::where('role', 'admin')->count(),
+                'users' => User::where('role', 'user')->count(),
+            ]
         ];
 
         return response()->json(['data' => $data]);

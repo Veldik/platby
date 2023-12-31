@@ -123,12 +123,15 @@
                                            style="border-collapse:collapse;border-spacing:0px;">
                                         <tbody>
                                         <tr>
-                                            <td style="width:50px;">
+                                            <td style="width:100px;">
+                                                <a href="{{ config('app.fe_url') }}">
+
                                                 <img alt="logo" height="auto"
-                                                     src="{{ $message->embed(public_path() . '/images/logo/logo@1x.png') }}"
-                                                     style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:14px;"
-                                                     width="50"/>
+                                                     src="{{ $message->embed(public_path() . '/images/logo-white.png') }}"
+                                                     style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:14px;"/>
+                                            </a>
                                             </td>
+
                                         </tr>
                                         </tbody>
                                     </table>

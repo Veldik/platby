@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Mail\PaidCreditEmail;
 use App\Mail\PaymentRecordEmail;
 use App\Mail\PaymentStornoEmail;
 use App\Models\Payer;
 use App\Models\Payment;
-use App\Http\Requests\StorePaymentRequest;
 use App\Models\PaymentRecord;
-use Illuminate\Support\Facades\Mail;
 use Defr\QRPlatba\QRPlatba;
+use Illuminate\Support\Facades\Mail;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PaymentController extends Controller
@@ -24,10 +25,17 @@ class PaymentController extends Controller
     public function index()
     {
         $payments = QueryBuilder::for(Payment::class)
-            ->with('paymentRecords', 'paymentRecords.payer') // todo: remove and make it into a separate endpoint
-            ->paginate(10);
+            ->with('paymentRecords')
+            ->paginate(15);
 
         return PaymentResource::collection($payments);
+    }
+
+    public function show(Payment $payment)
+    {
+        $payment = Payment::with('paymentRecords', 'paymentRecords.payer')->where('id', $payment->id)->first();
+
+        return PaymentResource::make($payment);
     }
 
     public function store(StorePaymentRequest $request)
