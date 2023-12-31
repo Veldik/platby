@@ -19,7 +19,6 @@ class PeriodPaymentController extends Controller
 
     public function show(PeriodPayment $periodPayment)
     {
-        // load the periodPayers relationship
         $periodPayment->load('periodPayers');
         $periodPayment->load('periodPayers.payer');
 

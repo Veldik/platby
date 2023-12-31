@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UpdatePasswordRequest;
+use App\Mail\UserChangePassword;
+use App\Models\PasswordReset;
 use App\Models\Payer;
 use App\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -32,7 +36,7 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'token' => $authToken]);
     }
 
-    function forgotPassword(StoreUserRequest $request)
+    public function changePassword(UpdatePasswordRequest $request)
     {
         $validated = $request->validated();
 
@@ -53,40 +57,41 @@ class AuthController extends Controller
             User::create($validated);
         }
 
+        $passwordReset = PasswordReset::where('email', $validated['email'])->first();
+        if (isset($passwordReset)) {
+            if ($passwordReset->created_at > Carbon::now()->subMinutes(2)) {
+                return response()->json(['message' => 'Email byl již odeslán, musíš chvíli počket před odesláním dalšího.'], 400);
+            }
+            PasswordReset::where('email', $validated['email'])->delete();
+        }
 
+        $passwordReset = new PasswordReset;
+        $passwordReset->email = $validated['email'];
+        $passwordReset->save();
+        Mail::to($validated['email'])->send(new UserChangePassword($passwordReset->token));
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['status' => __($status)])
-            : response()->json(['error' => __($status)], 400);
+        return response()->json(['status' => 'ok']);
     }
 
-    // todo: add reset password
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'token' => 'required',
-            'password' => 'required|confirmed|min:8',
-        ]);
+        $validated = $request->validated();
 
-        // Reset the password
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->save();
+        $passwordReset = PasswordReset::where('token', $validated['token'])->first();
 
-                event(new PasswordReset($user));
+        if (isset($passwordReset)) {
+            if (!$passwordReset && $passwordReset->created_at < Carbon::now()->subMinutes(60)) {
+                return response()->json(['message' => 'Odkaz pro obnovu hesla vypršel.'], 400);
             }
-        );
+        } else {
+            return response()->json(['message' => 'Odkaz pro obnovu hesla není platný.'], 400);
+        }
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['status' => __($status)])
-            : response()->json(['error' => [__($status)]], 400);
+        $user = User::where('email', $passwordReset->email)->first();
+        $user->password = Hash::make($validated["password"]);
+        $user->save();
+        PasswordReset::where('email', $passwordReset->email)->delete();
+
+        return response()->json(['status' => 'ok']);
     }
 }

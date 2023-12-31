@@ -12,9 +12,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-// todo: fix forgot password and reset password
-//Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-//Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/change-password', [AuthController::class, 'changePassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::get('/', function () {
     return response()->json(['name' => config('app.name')]);
