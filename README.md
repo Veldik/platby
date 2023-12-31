@@ -1,5 +1,7 @@
 # Platby
 Backend v Laravelu k systému Veldovy platby.
+Frontend je v repozitáři [platby-frontend](https://github.com/veldik/platby-frontend).
+
 
 ## Funkce
 - Vytváření plateb s emailovým upozorněním a generováním QR kódu
