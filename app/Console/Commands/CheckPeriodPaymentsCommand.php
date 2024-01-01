@@ -66,7 +66,7 @@ class CheckPeriodPaymentsCommand extends Command
                             ];
 
                             PaymentRecord::create([
-                                'payer_id' => $payer['id'],
+                                'payer_id' => $payer['payer_id'],
                                 'payment_id' => $payment->id,
                                 'amount' => $payer['amount'],
                                 'paid_at' => now(),
