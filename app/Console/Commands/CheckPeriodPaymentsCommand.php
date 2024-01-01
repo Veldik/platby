@@ -47,7 +47,7 @@ class CheckPeriodPaymentsCommand extends Command
 
                     foreach ($payers as $payer) {
                         $this->info('Přidávám platbu ' . $title .  ' pro: ' . $payer->payer->firstName . ' ' . $payer->payer->lastName);
-                        $dbPayer = Payer::where('id', $payer['id'])->first();
+                        $dbPayer = Payer::where('id', $payer['payer_id'])->first();
 
                         if ($dbPayer->credits->sum('amount') >= $payer['amount']) {
                             $dbPayer->credits()->create([
@@ -75,7 +75,7 @@ class CheckPeriodPaymentsCommand extends Command
                             Mail::to($dbPayer->email)->send(new PaidCreditEmail($data));
                         } else {
                             $record = PaymentRecord::create([
-                                'payer_id' => $payer['id'],
+                                'payer_id' => $payer['payer_id'],
                                 'payment_id' => $payment->id,
                                 'amount' => $payer['amount']
                             ]);
