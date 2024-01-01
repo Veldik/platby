@@ -16,12 +16,12 @@ class UserPayerController extends Controller
 
     public function payments()
     {
-        return PaymentRecordResource::collection(auth()->user()->payer->paymentRecords->load('payment'));
+        return PaymentRecordResource::collection(auth()->user()->payer->paymentRecords->load('payment')->sortByDesc('created_at'));
     }
 
     public function credits()
     {
-        return CreditResource::collection(auth()->user()->payer->credits);
+        return CreditResource::collection(auth()->user()->payer->credits->sortByDesc('created_at'));
     }
 
     public function addCredits(PayerAddCreditsRequest $request)
