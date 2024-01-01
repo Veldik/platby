@@ -34,7 +34,7 @@ class PeriodPayment extends Model
 
     public function periodPayers()
     {
-        return $this->hasMany(PeriodPaymentPayers::class);
+        return $this->hasMany(PeriodPaymentPayer::class);
     }
 
     public function nextRun()

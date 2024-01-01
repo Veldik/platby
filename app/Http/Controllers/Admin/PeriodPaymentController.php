@@ -58,6 +58,7 @@ class PeriodPaymentController extends Controller
     public function destroy(PeriodPayment $periodPayment)
     {
         $periodPayment->delete();
+        return response()->json(['status' => 'ok']);
     }
 
     public function addPayer(PeriodPayment $periodPayment, StorePeriodPaymentPayerRequest $request) {
