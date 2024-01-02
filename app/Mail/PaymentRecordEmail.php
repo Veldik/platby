@@ -34,7 +34,7 @@ class PaymentRecordEmail extends Mailable
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Zaplaťte prosím - ' . $this->paymentRecord['title'],
+            subject: 'Výzva k platbě - ' . $this->paymentRecord['title'],
         );
     }
 

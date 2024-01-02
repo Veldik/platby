@@ -33,7 +33,7 @@ class CreditAcceptedEmail extends Mailable
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Kredit přičten +' . $this->data['amount'] . ' CZK',
+            subject: 'Kredit přičten +' . $this->data['amount'],
         );
     }
 

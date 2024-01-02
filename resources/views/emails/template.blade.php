@@ -1,4 +1,3 @@
-<!-- https://codedmails.com/ -->
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -126,10 +125,10 @@
                                             <td style="width:100px;">
                                                 <a href="{{ config('app.fe_url') }}">
 
-                                                <img alt="logo" height="auto"
-                                                     src="{{ $message->embed(public_path() . '/images/logo-white.png') }}"
-                                                     style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:14px;"/>
-                                            </a>
+                                                    <img height="auto"
+                                                         src="{{ $message->embed(public_path() . '/images/logo-white.png') }}"
+                                                         style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:14px;"/>
+                                                </a>
                                             </td>
 
                                         </tr>
@@ -286,6 +285,12 @@
                                         style="font-family:Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;line-height:24px;text-align:left;color:#999999;">
                                         Systém, který ti zaslal tento email vytvořil <a
                                             href="https://thevelda.eu">Velda</a></div>
+                                    <div
+                                        style="font-family:Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;line-height:24px;text-align:left;color:#999999;">
+                                        Projekt je open-source dostupný na <a
+                                            href="https://github.com/veldik"
+                                        >Githubu</a>.
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>

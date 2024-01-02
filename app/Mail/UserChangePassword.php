@@ -26,7 +26,7 @@ class UserChangePassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Resetování hesla',
+            subject: 'Obnova hesla',
         );
     }
 

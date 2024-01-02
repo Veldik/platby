@@ -6,8 +6,10 @@
 
 @section('content')
     <div>
-        Zdravím, <br>
-        byl ti přičten kredit v hodnotě <b>{{ $data["amount"] }} CZK</b>.<br>
-        Momentálně máš na účtu <b>{{ $data["payer"]["credit"] }} CZK</b>.<br>
+        Ahoj! <br/>
+
+        Právě ti byl přičten kredit v hodnotě {{ $data["amount"] }}. Nyní máš na kreditovém účtu celkem {{ $data["payer"]["credit"] }}. <br/>
+
+        Přeji hezký den!
     </div>
 @endsection

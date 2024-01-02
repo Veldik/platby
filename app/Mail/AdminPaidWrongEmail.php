@@ -21,6 +21,7 @@ class AdminPaidWrongEmail extends Mailable
      */
     public function __construct($paymentRecord)
     {
+
         $this->paymentRecord = $paymentRecord;
     }
 

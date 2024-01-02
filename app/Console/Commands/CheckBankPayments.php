@@ -9,6 +9,7 @@ use App\Mail\PaidWrongEmail;
 use App\Models\Credit;
 use App\Models\Payer;
 use App\Models\PaymentRecord;
+use App\Utils\ReplacementUtil;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use h4kuna\Fio;
@@ -67,11 +68,11 @@ class CheckBankPayments extends Command
                     ]);
 
                     $data = [
-                        'amount' => $transaction->amount,
+                        'amount' => ReplacementUtil::formatCurrency($transaction->amount),
                         'payer' => [
                             'name' => $payer->firstName . ' ' . $payer->lastName,
                             'email' => $payer->email,
-                            'credit' => $payer->credits->sum('amount'),
+                            'credit' => ReplacementUtil::formatCurrency($payer->credits->sum('amount')),
                         ]
                     ];
 
@@ -93,7 +94,7 @@ class CheckBankPayments extends Command
                         'description' => $dbPaymentRecord->payment['description'] ?? null,
                         'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
                         'email' => $dbPaymentRecord->payer->email,
-                        'amount' => $dbPaymentRecord->amount,
+                        'amount' => ReplacementUtil::formatCurrency($dbPaymentRecord->amount),
                         'account_number' => config('fio.account_number'),
                         'variable_symbol' => $dbPaymentRecord->id,
                     ];
@@ -109,8 +110,8 @@ class CheckBankPayments extends Command
                         'description' => $dbPaymentRecord->payment['description'] ?? null,
                         'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
                         'email' => $dbPaymentRecord->payer->email,
-                        'amount' => $dbPaymentRecord->amount,
-                        'realamount' => $transaction->amount,
+                        'amount' => ReplacementUtil::formatCurrency($dbPaymentRecord->amount),
+                        'realamount' => ReplacementUtil::formatCurrency($transaction->amount),
                         'account_number' => config('fio.account_number'),
                         'variable_symbol' => $dbPaymentRecord->id,
                     ];

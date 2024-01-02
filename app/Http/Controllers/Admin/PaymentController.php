@@ -11,6 +11,7 @@ use App\Mail\PaymentStornoEmail;
 use App\Models\Payer;
 use App\Models\Payment;
 use App\Models\PaymentRecord;
+use App\Utils\ReplacementUtil;
 use Defr\QRPlatba\QRPlatba;
 use Illuminate\Support\Facades\Mail;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -58,11 +59,11 @@ class PaymentController extends Controller
 
                 $data = [
                     'title' => $validated['title'],
-                    'credit' => $payer['amount'],
+                    'credit' => ReplacementUtil::formatCurrency($payer['amount']),
                     'payer' => [
                         'name' => $dbPayer->firstName . ' ' . $dbPayer->lastName,
                         'email' => $dbPayer->email,
-                        'credit' => $dbPayer->credits->sum('amount')-$payer['amount'],
+                        'credit' => ReplacementUtil::formatCurrency($dbPayer->credits->sum('amount')-$payer['amount']),
                     ]
                 ];
 
@@ -101,6 +102,7 @@ class PaymentController extends Controller
                     ->setDueDate(new \DateTime());
 
                 $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
+                $paymentRecord['amount'] = ReplacementUtil::formatCurrency($paymentRecord['amount']);
 
                 Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
             }
@@ -124,7 +126,7 @@ class PaymentController extends Controller
                 'description' => $record->payment['description'] ?? null,
                 'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
                 'email' => $record->payer->email,
-                'amount' => $record->amount,
+                'amount' => ReplacementUtil::formatCurrency($record->amount),
                 'account_number' => config('fio.account_number'),
                 'variable_symbol' => $record->id,
             ];

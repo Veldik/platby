@@ -7,6 +7,7 @@ use App\Http\Resources\PaymentRecordResource;
 use App\Mail\PaidSuccessfullyEmail;
 use App\Mail\PaymentRecordEmail;
 use App\Models\PaymentRecord;
+use App\Utils\ReplacementUtil;
 use Carbon\Carbon;
 use Defr\QRPlatba\QRPlatba;
 use Illuminate\Support\Facades\Mail;
@@ -39,7 +40,7 @@ class PaymentRecordController extends Controller
             'description' => $record->payment->description ?? null,
             'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
             'email' => $record->payer->email,
-            'amount' => $record->amount,
+            'amount' => ReplacementUtil::formatCurrency($record->amount),
             'account_number' => config('fio.account_number'),
             'variable_symbol' => $record->id,
         ];
@@ -77,6 +78,8 @@ class PaymentRecordController extends Controller
             ->setDueDate(new \DateTime());
 
         $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
+        $paymentRecord['amount'] = ReplacementUtil::formatCurrency($paymentRecord['amount']);
+
         Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
         return response()->json(['status' => 'ok']);
     }

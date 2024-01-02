@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\PaymentLateEmail;
 use App\Models\PaymentRecord;
+use App\Utils\ReplacementUtil;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -45,7 +46,7 @@ class LatePaymentAnnounce extends Command
                     'description' => $record->payment['description'] ?? null,
                     'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
                     'email' => $record->payer->email,
-                    'amount' => $record->amount,
+                    'amount' => ReplacementUtil::formatCurrency($record->amount),
                     'account_number' => config('fio.account_number'),
                     'variable_symbol' => $record->id,
                     'qr_code' => $record->getQRCode(),

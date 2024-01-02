@@ -6,12 +6,15 @@
 
 @section('content')
     <div>
-        Zdravím, <br>
-        nejspíše došlo k chybě a platba byla musela být stornována, tudíž ji neplaťte!<br>
+        Ahoj! <br/>
+
+        Vypadá to, že došlo k nějaké chybě a platba musela být stornována, takže ji, prosím, neplať. <br/>
         <br>
         <b>Podrobnosti stornované platby:</b><br>
         Název: <b>{{ $payment["title"] }}</b><br>
         Variabilní symbol: <b>{{ $payment['variable_symbol'] }}</b><br>
-        Částka: <b>{{ str_replace(".", ",", $payment['amount']) }} CZK</b><br>
+        Částka: <b>{{ $payment['amount'] }}</b><br>
+        <br>
+        Přeji hezký den!
     </div>
 @endsection

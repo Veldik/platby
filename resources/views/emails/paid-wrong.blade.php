@@ -6,10 +6,14 @@
 
 @section('content')
     <div>
-        Zdravím, <br>
-        díky moc za zaplacení, akorát že vůbec! Poslal si špatnou částku k platbě <b>{{ $payment['title'] }}</b>.<br>
-        Měl si mi poslat <b>{{ $payment['amount'] }} CZK</b>, ale poslal jsi <b>{{ $payment['realamount'] }} CZK</b>.<br>
-        Prosím, příště si to zkontroluj. Děkuji.<br>
-        Ozvu se ti s řešením problému. <br>
+        Ahoj! <br/>
+
+        Děkuji za tvoji platbu. Všiml jsem si, že došlo k malému nedorozumění s částkou k platbě za {{ $payment['title'] }}. <br/>
+
+        Měl jsi mi poslat {{ $payment['amount'] }}, ale ve skutečnosti jsi poslal {{ $payment['realamount'] }}. Může se to stát, ale prosím, příště si to zkontroluj. <br/>
+
+        Neboj, společně najdeme řešení tohoto problému. Ozvu se ti co nejdříve s možnými kroky. <br/>
+
+        Přeji hezký den!
     </div>
 @endsection
