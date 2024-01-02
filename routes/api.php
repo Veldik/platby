@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PayerController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PaymentRecordController;
 use App\Http\Controllers\Admin\PeriodPaymentController;
+use App\Http\Controllers\Admin\PeriodPaymentPayerController;
 use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -53,7 +54,7 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
         });
 
         Route::prefix('period-payment-payer/{periodPaymentPayer}')->group(function () {
-            Route::delete('/', [PeriodPaymentController::class, 'destroy']);
+            Route::delete('/', [PeriodPaymentPayerController::class, 'destroy']);
         });
     });
 });
