@@ -1,12 +1,20 @@
 {
-    "name": "laravel/laravel",
+    "name": "veldik/platby",
+    "description": "System pro správu plateb.",
     "type": "project",
-    "description": "The Laravel Framework.",
     "keywords": [
         "framework",
         "laravel"
     ],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Jakub Velička (Velda)",
+            "email": "jakub@velicka.eu",
+            "homepage": "https://thevelda.eu",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^8.0.2",
         "dfridrich/qr-platba": "2.0.2",

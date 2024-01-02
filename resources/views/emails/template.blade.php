@@ -288,7 +288,7 @@
                                     <div
                                         style="font-family:Helvetica, Arial, sans-serif;font-size:14px;font-weight:400;line-height:24px;text-align:left;color:#999999;">
                                         Projekt je open-source dostupný na <a
-                                            href="https://github.com/veldik"
+                                            href="https://github.com/veldik/platby"
                                         >Githubu</a>.
                                     </div>
                                 </td>
