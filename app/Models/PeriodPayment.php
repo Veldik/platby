@@ -48,6 +48,9 @@ class PeriodPayment extends Model
     }
 
     public function displayDescription() {
+        if (empty($this->description)) {
+            return '';
+        }
         return ReplacementUtil::replace($this->description);
     }
 }
