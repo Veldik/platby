@@ -6,6 +6,7 @@ use App\Http\Requests\PayerAddCreditsRequest;
 use App\Http\Resources\CreditResource;
 use App\Http\Resources\PayerResource;
 use App\Http\Resources\PaymentRecordResource;
+use App\Models\PaymentRecord;
 
 class UserPayerController extends Controller
 {
@@ -33,9 +34,9 @@ class UserPayerController extends Controller
         ]);
     }
 
-    public function qrCode($paymentRecord)
+    public function qrCode(PaymentRecord $paymentRecord)
     {
-        $paymentRecord = auth()->user()->payer->paymentRecords()->findOrFail($paymentRecord);
+        $paymentRecord = auth()->user()->payer->paymentRecords()->findOrFail($paymentRecord->id);
 
         return response()->json([
             'data' => $paymentRecord->getQRCode(),
