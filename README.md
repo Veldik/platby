@@ -10,4 +10,4 @@ Frontend je v repozitáři [platby-frontend](https://github.com/veldik/platby-fr
 - Automatické upozornění uživatelů na nezaplacené platby
 - Automatické periodické vytváření plateb s nastavitelnou periodou
 - Možnost předplatit kredity pro budoucí platby
-- Možnost registrace uživatelů pro zobrazení jejich plateb a dobytí kreditů
+- Možnost registrace uživatelů pro zobrazení jejich plateb a dobití kreditů
