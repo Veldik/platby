@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CreditController;
 use App\Http\Controllers\Admin\PayerController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PaymentRecordController;
@@ -46,6 +47,9 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
             Route::post('resend', [PaymentRecordController::class, 'resend']);
         });
 
+        Route::prefix('payers/{payer}')->group(function () {
+            Route::get('credits', [CreditController::class, 'index']);
+        });
 
         Route::apiResource('period-payments', PeriodPaymentController::class);
 
