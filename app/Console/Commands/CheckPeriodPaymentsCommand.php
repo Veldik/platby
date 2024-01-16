@@ -35,7 +35,7 @@ class CheckPeriodPaymentsCommand extends Command
             if ($periodPayment->last_run < $lastExpectedRunTime) {
                 try {
                     $title = ReplacementUtil::replace($periodPayment->title);
-                    $description = ReplacementUtil::replace($periodPayment->description);
+                    $description = ReplacementUtil::replace($periodPayment->description ?? "");
                     $payers = $periodPayment->periodPayers;
 
                     $payment = Payment::create([
@@ -95,7 +95,7 @@ class CheckPeriodPaymentsCommand extends Command
                             $qrPlatba->setAccount($paymentRecord['account_number'])
                                 ->setVariableSymbol($paymentRecord['variable_symbol'])
                                 ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
-                                ->setAmount($paymentRecord['amount'])
+                                ->setAmount($record->amount)
                                 ->setCurrency('CZK')
                                 ->setDueDate(new \DateTime());
 

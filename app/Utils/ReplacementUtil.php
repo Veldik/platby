@@ -26,7 +26,7 @@ class ReplacementUtil
 
         return $text;
     }
-    public static function formatCurrency($number)
+    public static function formatCurrency($number): string
     {
         return number_format($number, 2, ',', ' ') . ' Kč';
     }

@@ -1,7 +1,7 @@
 @extends('emails.template')
 
 @section('title')
-    Platba přijata
+    Špatná částka - {{ $payment['title'] }}
 @endsection
 
 @section('content')
@@ -10,7 +10,7 @@
 
         Děkuji za tvoji platbu. Všiml jsem si, že došlo k malému nedorozumění s částkou k platbě za {{ $payment['title'] }}. <br/>
 
-        Měl jsi mi poslat {{ $payment['amount'] }}, ale ve skutečnosti jsi poslal {{ $payment['realamount'] }}. Může se to stát, ale prosím, příště si to zkontroluj. <br/>
+        Měl jsi poslat {{ $payment['amount'] }}, ale ve skutečnosti jsi poslal {{ $payment['realamount'] }}. Může se to stát, ale prosím, příště si to zkontroluj. <br/>
 
         Neboj, společně najdeme řešení tohoto problému. Ozvu se ti co nejdříve s možnými kroky. <br/>
 

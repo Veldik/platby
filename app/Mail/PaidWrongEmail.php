@@ -46,7 +46,7 @@ class PaidWrongEmail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.admin-paid-wrong',
+            view: 'emails.paid-wrong',
             with: [
                 'payment' => $this->paymentRecord,
             ]

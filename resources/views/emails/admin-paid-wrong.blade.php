@@ -1,7 +1,7 @@
 @extends('emails.template')
 
 @section('title')
-    Platba přijata {{$paymentRecord['title']}}
+    Platba přijata {{$payment['title']}}
 @endsection
 
 @section('content')
