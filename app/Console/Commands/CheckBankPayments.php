@@ -9,6 +9,7 @@ use App\Mail\PaidWrongEmail;
 use App\Models\Credit;
 use App\Models\Payer;
 use App\Models\PaymentRecord;
+use App\Models\User;
 use App\Utils\ReplacementUtil;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -100,7 +101,7 @@ class CheckBankPayments extends Command
                     ];
 
                     Mail::to($paymentRecord['email'])->send(new PaidSuccessfullyEmail($paymentRecord));
-                    $this->info('Platba ' . $dbPaymentRecord->id . ' s částkou ' . $paymentRecord['amount'] . 'CZK byla úspěšně zpracována.');
+                    $this->info('Platba ' . $dbPaymentRecord->id . ' s částkou ' . $paymentRecord['amount'] . ' byla úspěšně zpracována.');
                 } else if ($wrongRecord) {
                     $dbPaymentRecord = $wrongRecord;
 
@@ -117,7 +118,12 @@ class CheckBankPayments extends Command
                     ];
 
                     $this->error('Platba ' . $transaction->variableSymbol . ' byla nalezena, ale nemohla být zpracována, protože částka nesouhlasí. Na účet přišla částka ' . $transaction->amount . 'CZK, ale platba byla očekávána v hodnotě ' . $wrongRecord->amount . 'CZK.');
-                    Mail::to(config('mail.from.address'))->send(new AdminPaidWrongEmail($paymentRecord));
+
+                    $adminEmails = User::where('role', 'admin')->get()->pluck('email')->toArray();
+                    foreach ($adminEmails as $recipient) {
+                        Mail::to($recipient)->send(new AdminPaidWrongEmail($paymentRecord));
+                    }
+
                     Mail::to($paymentRecord['email'])->send(new PaidWrongEmail($paymentRecord));
                 }
             }
