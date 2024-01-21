@@ -32,6 +32,7 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
         Route::get('credits', [UserPayerController::class, 'credits']);
         Route::prefix('payment-record/{paymentRecord}')->group(function () {
             Route::get('qrcode', [UserPayerController::class, 'qrCode']);
+            Route::post('pay', [UserPayerController::class, 'payByCredits']);
         });
     });
 

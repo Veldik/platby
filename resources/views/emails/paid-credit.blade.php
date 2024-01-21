@@ -1,14 +1,14 @@
 @extends('emails.template')
 
 @section('title')
-    Automaticky zaplaceno pomocí kreditu
+    Zaplaceno pomocí kreditu
 @endsection
 
 @section('content')
     <div>
         Ahoj! </br>
 
-        Chtěl jsem ti dát vědět, že jsme ti strhli kredit ve výši {{ $data["credit"] }} za nákup {{ $data["title"] }}. <br/>
+        Chtěl jsem ti dát vědět, že jsme ti strhli kredit ve výši {{ $data["credit"] }} za zaplacení {{ $data["title"] }}. <br/>
 
         Tvůj aktuální zůstatek kreditů činí {{ $data["payer"]["credit"] }}. </br>
 

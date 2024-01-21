@@ -34,6 +34,27 @@ class UserPayerController extends Controller
         ]);
     }
 
+    public function payByCredits(PaymentRecord $paymentRecord)
+    {
+        $paymentRecord = auth()->user()->payer->paymentRecords()->findOrFail($paymentRecord->id);
+
+        if ($paymentRecord->paid_at) {
+            return response()->json([
+                'message' => 'Platba již byla uhrazena.',
+            ], 422);
+        }
+
+        if ($paymentRecord->amount > auth()->user()->payer->creditSum()) {
+            return response()->json([
+                'message' => 'Nedosatek kreditů.',
+            ], 422);
+        }
+
+        $paymentRecord->payByCredits();
+
+        return response()->json(['status' => 'ok']);
+    }
+
     public function qrCode(PaymentRecord $paymentRecord)
     {
         $paymentRecord = auth()->user()->payer->paymentRecords()->findOrFail($paymentRecord->id);
