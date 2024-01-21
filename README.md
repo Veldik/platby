@@ -4,7 +4,7 @@ Frontend je v repozitáři [platby-frontend](https://github.com/veldik/platby-fr
 
 
 ## Funkce
-- Vytváření plateb s emailovým upozorněním a generováním QR kódu
+- Vytváření plateb s e-mailovým upozorněním a generováním QR kódu
 - Možnost vytvořit platbu pro více uživatelů najednou
 - Sledování příchozích plateb
 - Automatické upozornění uživatelů na nezaplacené platby
