@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PeriodPaymentPayer extends Model
@@ -10,6 +11,8 @@ class PeriodPaymentPayer extends Model
         'payer_id',
         'amount',
     ];
+
+    use HasFactory;
 
     public function payer()
     {

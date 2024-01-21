@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Utils\ReplacementUtil;
 use Cron\CronExpression;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PeriodPayment extends Model
@@ -14,6 +15,8 @@ class PeriodPayment extends Model
         'cron_expression',
         'last_run',
     ];
+
+    use HasFactory;
 
     protected static function boot()
     {
