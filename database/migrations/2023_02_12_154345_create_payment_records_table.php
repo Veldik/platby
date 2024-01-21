@@ -18,8 +18,8 @@ return new class extends Migration
         Schema::create('payment_records', function (Blueprint $table) {
             $table->id();
             $table->float('amount');
-            $table->foreignIdFor(Payment::class);
-            $table->foreignIdFor(Payer::class);
+            $table->foreignIdFor(Payment::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Payer::class)->nullable()->constrained()->onDelete('set null');
             $table->dateTime('paid_at')->nullable();
             $table->timestamps();
         });

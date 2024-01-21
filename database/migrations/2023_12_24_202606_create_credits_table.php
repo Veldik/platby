@@ -10,7 +10,7 @@ return new class extends Migration {
     {
         Schema::create('credits', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Payer::class);
+            $table->foreignIdFor(Payer::class)->nullable()->constrained()->onDelete('set null');
             $table->float('amount');
             $table->string('description')->nullable();
             $table->timestamps();

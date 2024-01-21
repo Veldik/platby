@@ -4,12 +4,14 @@ namespace Database\Factories;
 
 use App\Models\Payment;
 use App\Models\PaymentRecord;
+use App\Models\PeriodPayment;
+use App\Models\PeriodPaymentPayer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payment>
  */
-class PaymentFactory extends Factory
+class PeriodPaymentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -21,6 +23,13 @@ class PaymentFactory extends Factory
         return [
             'title' => $this->faker->words(rand(1, 3), true),
             'description' => $this->faker->sentence(),
+            'cron_expression' => $this->faker->randomElement([
+                '0 0 * * *',
+                '0 0 1 * *',
+                '0 0 1 1 *',
+                '0 0 1 1 1',
+            ]),
+            'last_run' => null,
         ];
     }
     /**
@@ -30,10 +39,10 @@ class PaymentFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (Payment $payment) {
-            PaymentRecord::factory()
-                ->count(rand(1, 10))
-                ->create(['payment_id' => $payment->id]);
+        return $this->afterCreating(function (PeriodPayment $periodPayment) {
+            PeriodPaymentPayer::factory()
+                ->count(rand(1, 7))
+                ->create(['period_payment_id' => $periodPayment->id]);
         });
     }
 }

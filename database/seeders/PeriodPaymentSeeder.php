@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Payment;
+use App\Models\PeriodPayment;
 use Illuminate\Database\Seeder;
 
-class PaymentRecordSeeder extends Seeder
+class PeriodPaymentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +15,8 @@ class PaymentRecordSeeder extends Seeder
      */
     public function run()
     {
-        //
+        PeriodPayment::factory()
+            ->count(rand(5, 15))
+            ->create();
     }
 }

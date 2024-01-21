@@ -11,8 +11,8 @@ return new class extends Migration {
     {
         Schema::create('period_payment_payers', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(PeriodPayment::class);
-            $table->foreignIdFor(Payer::class);
+            $table->foreignIdFor(PeriodPayment::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Payer::class)->nullable()->constrained()->onDelete('set null');
             $table->float('amount');
             $table->timestamps();
         });
