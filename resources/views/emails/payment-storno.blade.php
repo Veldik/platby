@@ -10,7 +10,7 @@
 
         Vypadá to, že došlo k nějaké chybě a platba musela být stornována,
         @if($payment['paid_at'])
-            takže ti peníze za tuto platbu byly vráceny do kreditů.
+            takže ti peníze za tuto platbu byly vráceny ve formě kreditů.
         @else
             takže ji, prosím, neplať.
         @endif

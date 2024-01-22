@@ -50,6 +50,7 @@ Route::group(['prefix' => '/', 'middleware' => 'auth:sanctum'], function () {
 
         Route::prefix('payers/{payer}')->group(function () {
             Route::get('credits', [CreditController::class, 'index']);
+            Route::post('credits', [CreditController::class, 'store']);
         });
 
         Route::apiResource('period-payments', PeriodPaymentController::class);

@@ -22,6 +22,8 @@ class Payer extends Model
 
         static::deleting(function ($payer) {
             $payer->paymentRecords()->delete();
+            $payer->credits()->delete();
+            $payer->periodPaymentPayers()->delete();
         });
     }
 
@@ -30,9 +32,9 @@ class Payer extends Model
         return $this->hasMany(PaymentRecord::class);
     }
 
-    public function fullName()
+    public function periodPaymentPayers()
     {
-        return $this->firstName . ' ' . $this->lastName;
+        return $this->hasMany(PeriodPaymentPayer::class);
     }
 
     public function credits()
@@ -43,6 +45,11 @@ class Payer extends Model
     public function creditSum()
     {
         return $this->credits->sum('amount');
+    }
+
+    public function fullName()
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 
     public function getCreditQRCode($amount = 0)
