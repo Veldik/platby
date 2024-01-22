@@ -8,7 +8,13 @@
     <div>
         Ahoj! <br/>
 
-        Vypadá to, že došlo k nějaké chybě a platba musela být stornována, takže ji, prosím, neplať. <br/>
+        Vypadá to, že došlo k nějaké chybě a platba musela být stornována,
+        @if($payment['paid_at'])
+            takže ti peníze za tuto platbu byly vráceny do kreditů.
+        @else
+            takže ji, prosím, neplať.
+        @endif
+        <br/>
         <br>
         <b>Podrobnosti stornované platby:</b><br>
         Název: <b>{{ $payment["title"] }}</b><br>

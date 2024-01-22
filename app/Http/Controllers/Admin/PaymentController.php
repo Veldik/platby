@@ -129,7 +129,15 @@ class PaymentController extends Controller
                 'amount' => ReplacementUtil::formatCurrency($record->amount),
                 'account_number' => config('fio.account_number'),
                 'variable_symbol' => $record->id,
+                'paid_at' => $record->paid_at,
             ];
+
+            if ($record->paid_at) {
+                $record->payer->credits()->create([
+                    'amount' => $record->amount,
+                    'description' => 'deposit by cancellation payment ' . $record->payment['title'],
+                ]);
+            }
 
             Mail::to($paymentRecord['email'])->send(new PaymentStornoEmail($paymentRecord));
         });
