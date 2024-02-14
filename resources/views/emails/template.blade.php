@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <title> @yield('title') </title>
@@ -197,26 +197,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Button
-                            <tr>
-                                <td align="left" vertical-align="middle"
-                                    style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                           style="border-collapse:separate;line-height:100%;">
-                                        <tbody>
-                                        <tr>
-                                            <td align="center" bgcolor="#2e58ff" role="presentation"
-                                                style="border:none;border-radius:30px;cursor:auto;mso-padding-alt:10px 25px;background:#2e58ff;"
-                                                valign="middle">
-                                                <a href="https://google.com"
-                                                   style="display: inline-block; background: #2e58ff; color: #ffffff; font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: bold; line-height: 30px; margin: 0; text-decoration: none; text-transform: uppercase; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;"
-                                                   target="_blank"> Complete registration </a>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr> -->
                             </tbody>
                         </table>
                     </div>

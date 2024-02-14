@@ -1,5 +1,6 @@
-# Platby
-Backend v Laravelu k systému Veldovy platby.
+# platby
+
+Backend v Laravelu k systému platby.
 Frontend je v repozitáři [platby-frontend](https://github.com/veldik/platby-frontend).
 
 
