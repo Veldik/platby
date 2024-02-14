@@ -10,9 +10,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PaidWrongEmail extends Mailable
+class PaidWrongEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    protected $paymentRecord;
 
     /**
      * Create a new message instance.

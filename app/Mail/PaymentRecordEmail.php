@@ -14,6 +14,8 @@ class PaymentRecordEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $paymentRecord;
+
     /**
      * Create a new message instance.
      *

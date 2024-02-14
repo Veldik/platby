@@ -78,7 +78,7 @@ class CheckBankPayments extends Command
                     $data = [
                         'amount' => ReplacementUtil::formatCurrency($transaction->amount),
                         'payer' => [
-                            'name' => $payer->firstName . ' ' . $payer->lastName,
+                            'name' => $payer->fullName(),
                             'email' => $payer->email,
                             'credit' => ReplacementUtil::formatCurrency($payer->credits->sum('amount')),
                         ]
@@ -100,7 +100,7 @@ class CheckBankPayments extends Command
                         'id' => $dbPaymentRecord->id,
                         'title' => $dbPaymentRecord->payment['title'],
                         'description' => $dbPaymentRecord->payment['description'] ?? null,
-                        'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
+                        'name' => $dbPaymentRecord->payer->fullName(),
                         'email' => $dbPaymentRecord->payer->email,
                         'amount' => ReplacementUtil::formatCurrency($dbPaymentRecord->amount),
                         'account_number' => config('fio.account_number'),
@@ -116,7 +116,7 @@ class CheckBankPayments extends Command
                         'id' => $dbPaymentRecord->id,
                         'title' => $dbPaymentRecord->payment['title'],
                         'description' => $dbPaymentRecord->payment['description'] ?? null,
-                        'name' => $dbPaymentRecord->payer->firstName . ' ' . $dbPaymentRecord->payer->lastName,
+                        'name' => $dbPaymentRecord->payer->fullName(),
                         'email' => $dbPaymentRecord->payer->email,
                         'amount' => ReplacementUtil::formatCurrency($dbPaymentRecord->amount),
                         'realamount' => ReplacementUtil::formatCurrency($transaction->amount),

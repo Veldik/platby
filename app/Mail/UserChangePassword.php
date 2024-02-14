@@ -9,15 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class UserChangePassword extends Mailable
+class UserChangePassword extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    protected $token;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $token)
+    public function __construct($token)
     {
+        $this->token = $token;
     }
 
     /**
@@ -37,6 +40,9 @@ class UserChangePassword extends Mailable
     {
         return new Content(
             view: 'emails.change-password',
+            with: [
+                'token' => $this->token,
+            ]
         );
     }
 

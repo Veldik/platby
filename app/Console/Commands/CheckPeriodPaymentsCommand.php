@@ -2,18 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\PaidCreditEmail;
-use App\Mail\PaymentRecordEmail;
-use App\Models\Payer;
+use App\Jobs\SendPaymentRecordJob;
 use App\Models\Payment;
 use App\Models\PaymentRecord;
 use App\Models\PeriodPayment;
 use App\Utils\ReplacementUtil;
 use Cron\CronExpression;
-use Defr\QRPlatba\QRPlatba;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class CheckPeriodPaymentsCommand extends Command
 {
@@ -46,63 +42,13 @@ class CheckPeriodPaymentsCommand extends Command
                     $this->info("Vytvořena platba: " . $title);
 
                     foreach ($payers as $payer) {
-                        $this->info('Přidávám platbu ' . $title .  ' pro: ' . $payer->payer->firstName . ' ' . $payer->payer->lastName);
-                        $dbPayer = Payer::where('id', $payer['payer_id'])->first();
-
-                        if ($dbPayer->credits->sum('amount') >= $payer['amount']) {
-                            $dbPayer->credits()->create([
-                                'amount' => -$payer['amount'],
-                                'description' => 'withdraw by payment ' . $title . ' #' . $payment->id,
-                            ]);
-
-                            $data = [
-                                'title' => $title,
-                                'credit' => ReplacementUtil::formatCurrency($payer['amount']),
-                                'payer' => [
-                                    'name' => $dbPayer->firstName . ' ' . $dbPayer->lastName,
-                                    'email' => $dbPayer->email,
-                                    'credit' => ReplacementUtil::formatCurrency($dbPayer->credits->sum('amount')-$payer['amount']),
-                                ]
-                            ];
-
-                            PaymentRecord::create([
-                                'payer_id' => $payer['payer_id'],
-                                'payment_id' => $payment->id,
-                                'amount' => $payer['amount'],
-                                'paid_at' => now(),
-                            ]);
-
-                            Mail::to($dbPayer->email)->send(new PaidCreditEmail($data));
-                        } else {
-                            $record = PaymentRecord::create([
-                                'payer_id' => $payer['payer_id'],
-                                'payment_id' => $payment->id,
-                                'amount' => $payer['amount']
-                            ]);
-
-                            $paymentRecord = [
-                                'id' => $record->id,
-                                'title' => $title,
-                                'description' => $description ?? null,
-                                'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
-                                'email' => $record->payer->email,
-                                'amount' => ReplacementUtil::formatCurrency($record->amount),
-                                'account_number' => config('fio.account_number'),
-                                'variable_symbol' => $record->id,
-                            ];
-
-                            $qrPlatba = new QRPlatba();
-                            $qrPlatba->setAccount($paymentRecord['account_number'])
-                                ->setVariableSymbol($paymentRecord['variable_symbol'])
-                                ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
-                                ->setAmount($record->amount)
-                                ->setCurrency('CZK')
-                                ->setDueDate(new \DateTime());
-
-                            $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
-
-                            Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
-                        }
+                        $this->info('Přidávám platbu ' . $title .  ' pro: ' . $payer->payer->fullName());
+                        $paymentRecord = PaymentRecord::create([
+                            'payer_id' => $payer->payer->id,
+                            'payment_id' => $payment['id'],
+                            'amount' => $payer['amount'],
+                        ]);
+                        SendPaymentRecordJob::dispatch($payer->payer->id, $payment['id'], $paymentRecord['id'], $payer['amount']);
                     }
 
                     $periodPayment->last_run = now();

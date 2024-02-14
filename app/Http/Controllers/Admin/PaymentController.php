@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Resources\PaymentResource;
+use App\Jobs\SendPaymentRecordJob;
 use App\Mail\PaidCreditEmail;
 use App\Mail\PaymentRecordEmail;
 use App\Mail\PaymentStornoEmail;
@@ -49,63 +50,12 @@ class PaymentController extends Controller
         ]);
 
         foreach ($validated['payers'] as $payer) {
-            $dbPayer = Payer::where('id', $payer['id'])->first();
-
-            if ($dbPayer->credits->sum('amount') >= $payer['amount']) {
-                $dbPayer->credits()->create([
-                    'amount' => -$payer['amount'],
-                    'description' => 'withdraw by payment ' . $validated['title'] . ' #' . $payment->id,
-                ]);
-
-                $data = [
-                    'title' => $validated['title'],
-                    'credit' => ReplacementUtil::formatCurrency($payer['amount']),
-                    'payer' => [
-                        'name' => $dbPayer->firstName . ' ' . $dbPayer->lastName,
-                        'email' => $dbPayer->email,
-                        'credit' => ReplacementUtil::formatCurrency($dbPayer->credits->sum('amount')-$payer['amount']),
-                    ]
-                ];
-
-                PaymentRecord::create([
-                    'payer_id' => $payer['id'],
-                    'payment_id' => $payment->id,
-                    'amount' => $payer['amount'],
-                    'paid_at' => now(),
-                ]);
-
-                Mail::to($dbPayer->email)->send(new PaidCreditEmail($data));
-            } else {
-                $record = PaymentRecord::create([
-                    'payer_id' => $payer['id'],
-                    'payment_id' => $payment->id,
-                    'amount' => $payer['amount']
-                ]);
-
-                $paymentRecord = [
-                    'id' => $record->id,
-                    'title' => $validated['title'],
-                    'description' => $validated['description'] ?? null,
-                    'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
-                    'email' => $record->payer->email,
-                    'amount' => $record->amount,
-                    'account_number' => config('fio.account_number'),
-                    'variable_symbol' => $record->id,
-                ];
-
-                $qrPlatba = new QRPlatba();
-                $qrPlatba->setAccount($paymentRecord['account_number'])
-                    ->setVariableSymbol($paymentRecord['variable_symbol'])
-                    ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
-                    ->setAmount($paymentRecord['amount'])
-                    ->setCurrency('CZK')
-                    ->setDueDate(new \DateTime());
-
-                $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
-                $paymentRecord['amount'] = ReplacementUtil::formatCurrency($paymentRecord['amount']);
-
-                Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
-            }
+            $paymentRecord = PaymentRecord::create([
+                'payer_id' => $payer['id'],
+                'payment_id' => $payment['id'],
+                'amount' => $payer['amount'],
+            ]);
+            SendPaymentRecordJob::dispatch($payer['id'], $payment['id'], $paymentRecord['id'], $payer['amount']);
         }
 
         return response()->json(['status' => 'ok']);
@@ -124,7 +74,7 @@ class PaymentController extends Controller
                 'id' => $record->id,
                 'title' => $record->payment['title'],
                 'description' => $record->payment['description'] ?? null,
-                'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
+                'name' => $record->payer->fullName(),
                 'email' => $record->payer->email,
                 'amount' => ReplacementUtil::formatCurrency($record->amount),
                 'account_number' => config('fio.account_number'),

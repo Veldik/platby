@@ -44,7 +44,7 @@ class LatePaymentAnnounce extends Command
                     'id' => $record->id,
                     'title' => $record->payment['title'],
                     'description' => $record->payment['description'] ?? null,
-                    'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
+                    'name' => $record->payer->fullName(),
                     'email' => $record->payer->email,
                     'amount' => ReplacementUtil::formatCurrency($record->amount),
                     'account_number' => config('fio.account_number'),

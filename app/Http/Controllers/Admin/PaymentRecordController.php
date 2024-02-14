@@ -38,7 +38,7 @@ class PaymentRecordController extends Controller
             'id' => $record->id,
             'title' => $record->payment->title,
             'description' => $record->payment->description ?? null,
-            'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
+            'name' => $record->payer->fullName(),
             'email' => $record->payer->email,
             'amount' => ReplacementUtil::formatCurrency($record->amount),
             'account_number' => config('fio.account_number'),
@@ -47,40 +47,6 @@ class PaymentRecordController extends Controller
 
         Mail::to($paymentRecord['email'])->send(new PaidSuccessfullyEmail($paymentRecord));
 
-        return response()->json(['status' => 'ok']);
-    }
-
-    public function resend(PaymentRecord $paymentRecord)
-    {
-        if ($paymentRecord->paid_at) {
-            return response()->json(['status' => 'error', 'message' => 'Platební záznam je již zaplacen, nelze poslat zprávu o nezaplacení.'], 400);
-        }
-
-        $record = PaymentRecord::with('payment', 'payer')->where('id', $paymentRecord->id)->first();
-
-        $paymentRecord = [
-            'id' => $record->id,
-            'title' => $record->payment['title'],
-            'description' => $record->payment['description'] ?? null,
-            'name' => $record->payer->firstName . ' ' . $record->payer->lastName,
-            'email' => $record->payer->email,
-            'amount' => $record->amount,
-            'account_number' => config('fio.account_number'),
-            'variable_symbol' => $record->id,
-        ];
-
-        $qrPlatba = new QRPlatba();
-        $qrPlatba->setAccount($paymentRecord['account_number'])
-            ->setVariableSymbol($paymentRecord['variable_symbol'])
-            ->setMessage($paymentRecord['title'] . ' - ' . $paymentRecord['name'])
-            ->setAmount($paymentRecord['amount'])
-            ->setCurrency('CZK')
-            ->setDueDate(new \DateTime());
-
-        $paymentRecord['qr_code'] = $qrPlatba->getDataUri();
-        $paymentRecord['amount'] = ReplacementUtil::formatCurrency($paymentRecord['amount']);
-
-        Mail::to($paymentRecord['email'])->send(new PaymentRecordEmail($paymentRecord));
         return response()->json(['status' => 'ok']);
     }
 
