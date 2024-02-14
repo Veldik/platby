@@ -2,17 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\PaidSuccessfullyEmail;
-use App\Mail\AdminPaidWrongEmail;
-use App\Mail\PaidWrongEmail;
-use App\Models\PaymentRecord;
 use App\Models\User;
-use Carbon\Carbon;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use h4kuna\Fio;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 class UserRegister extends Command
 {

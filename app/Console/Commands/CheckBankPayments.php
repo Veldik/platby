@@ -40,16 +40,23 @@ class CheckBankPayments extends Command
     public function handle()
     {
         echo "Kontrola nových plateb z banky.\n";
-        $account = ["fioAccount" => [
-            "account" => config('fio.account_number'),
-            "token" => config('fio.token'),
-        ]];
 
-        $fioFactory = new Fio\FioFactory($account);
+        if (config('fio.fake_api')) {
+            $this->warn('FIO fake API je povolena, budou použity testovací data.');
+            $list = json_decode(file_get_contents(config('fio.fake_api_url')));
+        } else {
+            $account = ["fioAccount" => [
+                "account" => config('fio.account_number'),
+                "token" => config('fio.token'),
+            ]];
 
-        $fioRead = $fioFactory->createFioRead('fioAccount');
+            $fioFactory = new Fio\FioFactory($account);
 
-        $list = $fioRead->lastDownload();
+            $fioRead = $fioFactory->createFioRead('fioAccount');
+
+            $list = $fioRead->lastDownload();
+        }
+
 
         foreach ($list as $transaction) {
             if ($transaction->variableSymbol == null || $transaction->amount < 0) {
