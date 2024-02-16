@@ -11,7 +11,7 @@ use Cron\CronExpression;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class CheckPeriodPaymentsCommand extends Command
+class CheckPeriodPayments extends Command
 {
     protected $signature = 'check:period-payments';
 

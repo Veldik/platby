@@ -10,8 +10,9 @@ class Kernel extends ConsoleKernel
 
     protected $commands = [
         Commands\CheckBankPayments::class,
-        Commands\UserRegister::class,
-        Commands\CheckPeriodPaymentsCommand::class,
+        Commands\AdminRegister::class,
+        Commands\CheckPeriodPayments::class,
+        Commands\LatePaymentAnnounce::class,
     ];
 
     /**
