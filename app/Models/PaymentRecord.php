@@ -39,4 +39,17 @@ class PaymentRecord extends Model
 
         return $qrPlatba->getDataUri();
     }
+
+    public function payByCredits()
+    {
+        $this->payer->credits()->create([
+            'amount' => -$this->amount,
+            'description' => 'withdraw by payment ' . $this->payment->title,
+        ]);
+
+        $this->paid_at = now();
+        $this->save();
+
+        return $this;
+    }
 }
