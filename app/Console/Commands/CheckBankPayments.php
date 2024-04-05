@@ -72,7 +72,7 @@ class CheckBankPayments extends Command
                     Credit::create([
                         'payer_id' => $payer->id,
                         'amount' => $transaction->amount,
-                        'description' => "deposit from bank account " . $transaction->toAccount . "/" . $transaction->bankCode,
+                        'description' => "Vklad z bankovního účtu " . $transaction->toAccount . "/" . $transaction->bankCode,
                     ]);
 
                     $data = [

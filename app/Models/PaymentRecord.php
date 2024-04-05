@@ -44,7 +44,7 @@ class PaymentRecord extends Model
     {
         $this->payer->credits()->create([
             'amount' => -$this->amount,
-            'description' => 'withdraw by payment ' . $this->payment->title,
+            'description' => 'Strhnuto platbou ' . $this->payment->title,
         ]);
 
         $this->paid_at = now();

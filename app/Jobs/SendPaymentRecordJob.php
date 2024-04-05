@@ -42,7 +42,7 @@ class SendPaymentRecordJob implements ShouldQueue
         if ($dbPayer->credits->sum('amount') >= $this->amount) {
             $dbPayer->credits()->create([
                 'amount' => -$this->amount,
-                'description' => 'withdraw by payment ' . $payment->title,
+                'description' => 'Strhnuto platbou ' . $payment->title,
             ]);
 
             $data = [

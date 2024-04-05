@@ -45,7 +45,7 @@ class AuthController extends Controller
         if (!$user) {
             $payer = Payer::where('email', $validated['email'])->first();
             if (!$payer) {
-                return response()->json(['message' => 'You must be payer if you want to change password.'], 401);
+                return response()->json(['message' => 'Neplatná e-mailová adresa. Pro registraci je třeba být uveden v seznamu platičů.'], 401);
             }
 
             $validated = [

@@ -85,7 +85,7 @@ class PaymentController extends Controller
             if ($record->paid_at) {
                 $record->payer->credits()->create([
                     'amount' => $record->amount,
-                    'description' => 'deposit by cancellation payment ' . $record->payment['title'],
+                    'description' => 'Vklad zaplacené stornované platby ' . $record->payment['title'],
                 ]);
             }
 
