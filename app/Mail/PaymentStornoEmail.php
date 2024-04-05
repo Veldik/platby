@@ -14,6 +14,8 @@ class PaymentStornoEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    protected $paymentRecord;
+
     /**
      * Create a new message instance.
      *
