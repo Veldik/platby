@@ -29,9 +29,13 @@ class UserPayerController extends Controller
     {
         $validated = $request->validated();
 
-        return response()->json([
-            'data' => auth()->user()->payer->getCreditQRCode($validated['amount'] ?? 0),
-        ]);
+        return response()->json(['data' => [
+            'qrcode' => auth()->user()->payer->getCreditQRCode($validated['amount'] ?? 0),
+            'amount' => $validated['amount'] ?? 0,
+            'variableSymbol' => auth()->user()->payer->id,
+            'specificSymbol' => '2',
+            'accountNumber' => config('fio.account_number'),
+        ]]);
     }
 
     public function payByCredits(PaymentRecord $paymentRecord)
@@ -59,8 +63,11 @@ class UserPayerController extends Controller
     {
         $paymentRecord = auth()->user()->payer->paymentRecords()->findOrFail($paymentRecord->id);
 
-        return response()->json([
-            'data' => $paymentRecord->getQRCode(),
-        ]);
+        return response()->json(['data' => [
+            'qrcode' => $paymentRecord->getQRCode(),
+            'amount' => $paymentRecord->amount,
+            'variableSymbol' => $paymentRecord->id,
+            'accountNumber' => config('fio.account_number'),
+        ]]);
     }
 }

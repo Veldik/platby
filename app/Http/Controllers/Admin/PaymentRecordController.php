@@ -56,6 +56,11 @@ class PaymentRecordController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Platební záznam je již zaplacen.'], 400);
         }
 
-        return response()->json(['data' => $paymentRecord->getQRCode()]);
+        return response()->json(['data' => [
+            'qrcode' => $paymentRecord->getQRCode(),
+            'amount' => $paymentRecord->amount,
+            'variableSymbol' => $paymentRecord->id,
+            'accountNumber' => config('fio.account_number'),
+        ]]);
     }
 }
