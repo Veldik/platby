@@ -1,32 +1,17 @@
-FROM php:8.1-apache
+FROM serversideup/php:8.3-fpm-nginx
 
-RUN apt-get update \
-    && apt-get install -y \
-    && apt-get autoremove -y \
-    && apt-get install -y  \
-    libgd-dev \
-    curl \
-    libzip-dev \
-    zip
+ENV PHP_OPCACHE_ENABLE=1
 
+USER root
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql gd zip ctype iconv
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
 
+COPY --chown=www-data:www-data . /var/www/html
 
-RUN php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
-    php composer-setup.php --install-dir=/usr/bin --filename=composer && \
-    php -r "unlink('composer-setup.php');"
+USER www-data
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN npm install
+RUN npm run build
 
-RUN a2enmod rewrite
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-WORKDIR /var/www/html
-
-RUN composer install
-RUN php artisan key:generate
-RUN php artisan migrate --fresh
-
-EXPOSE 80
+RUN composer install --no-interaction --optimize-autoloader --no-dev
