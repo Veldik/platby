@@ -41,3 +41,4 @@ jobs:
           tags: |
             ghcr.io/${{ env.OWNER_LOWER }}/platby:latest
             ghcr.io/${{ env.OWNER_LOWER }}/platby:${{ env.TAG_NAME }}
+          platforms: linux/amd64,linux/arm64
