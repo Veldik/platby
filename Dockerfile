@@ -13,6 +13,9 @@ USER root
 
 COPY --chown=www-data:www-data . /var/www/html
 
+USER root
+RUN install-php-extensions gd
+
 USER www-data
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
